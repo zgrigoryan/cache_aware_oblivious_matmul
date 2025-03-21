@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
-#include "external/kaizen.h"
+#include "kaizen.h"
 #include "naive_matmul.h"
 #include "cache_aware_matmul.h"
 #include "cache_oblivious_matmul.h"
