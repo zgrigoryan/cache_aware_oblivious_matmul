@@ -13,6 +13,7 @@ The code attempts to detect certain cache parameters (like line size and L1 cach
 ```bash
 make
 ./cache_matmul --size 512 --iterations 10       
+```
 
 ## Example output 
 
