@@ -27,6 +27,7 @@ size_t get_cache_line_size() {
             bufferSize / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION));
         if (GetLogicalProcessorInformation(buffer.data(), &bufferSize)) {
             for (auto &info : buffer) {
+                // Look for L1 data cache
                 if (info.Relationship == RelationCache && info.Cache.Level == 1) {
                     return info.Cache.LineSize;
                 }
