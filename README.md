@@ -1,6 +1,3 @@
----
-
-```markdown
 # 🔢 Cache-Aware vs Cache-Oblivious Matrix Multiplication
 
 This project implements and benchmarks three matrix multiplication techniques:
@@ -46,7 +43,7 @@ This script reads `results.csv` and generates a performance plot as `timing_plot
 
 ## 📊 Results & Analysis
 
-![Timing Plot](timing_plot.png)
+![Timing Plot](src/timing_plot.png)
 
 ### Key Observations:
 
