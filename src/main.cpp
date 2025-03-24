@@ -6,8 +6,7 @@
 #include "cache_aware_matmul.h"
 #include "cache_oblivious_matmul.h"
 #include "cache_utils.h"
-
-// meaningless comment 
+#include <fstream>
 
 constexpr int DEFAULT_SIZE = 512;
 
@@ -55,6 +54,40 @@ int main(int argc, char* argv[]) {
     std::cout << "Cache-oblivious matmul time: " 
               << std::chrono::duration<double, std::milli>(end-start).count() 
               << " ms\n";
+
+    // Benchmark all three algorithms for a range of sizes
+    std::ofstream csv("results.csv");
+    csv << "Size,Naive,CacheAware,CacheOblivious\n";
+
+    for (int test_size = 500; test_size <= 524; ++test_size) {
+        std::vector<std::vector<int>> A(test_size, std::vector<int>(test_size, 1));
+        std::vector<std::vector<int>> B(test_size, std::vector<int>(test_size, 1));
+        std::vector<std::vector<int>> C(test_size, std::vector<int>(test_size, 0));
+
+        int cacheLine = get_cache_line_size();
+        int l1Cache = get_l1_cache_size();
+
+        auto start = std::chrono::high_resolution_clock::now();
+        naive_matmul(A, B, C);
+        auto end = std::chrono::high_resolution_clock::now();
+        double naive_time = std::chrono::duration<double, std::milli>(end - start).count();
+
+        for (auto &row : C) std::fill(row.begin(), row.end(), 0);
+        start = std::chrono::high_resolution_clock::now();
+        cache_aware_matmul(A, B, C, cacheLine, l1Cache);
+        end = std::chrono::high_resolution_clock::now();
+        double cache_aware_time = std::chrono::duration<double, std::milli>(end - start).count();
+
+        for (auto &row : C) std::fill(row.begin(), row.end(), 0);
+        start = std::chrono::high_resolution_clock::now();
+        cache_oblivious_matmul(A, B, C);
+        end = std::chrono::high_resolution_clock::now();
+        double cache_oblivious_time = std::chrono::duration<double, std::milli>(end - start).count();
+
+        csv << test_size << "," << naive_time << "," << cache_aware_time << "," << cache_oblivious_time << "\n";
+    }
+
+    csv.close();
 
     return 0;
 }
