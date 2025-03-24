@@ -19,8 +19,8 @@ int main(int argc, char* argv[]) {
     }
     
     // Determine cache parameters
-    int cacheLine = get_cache_line_size();
-    int l1Cache = get_l1_cache_size();
+    int cacheLine = static_cast<int>(get_cache_line_size());
+    int l1Cache = static_cast<int>(get_l1_cache_size());
     std::cout << "Detected Cache Line Size: " << cacheLine << " bytes\n";
     std::cout << "Detected L1 Cache Size: " << l1Cache << " bytes\n";
 
