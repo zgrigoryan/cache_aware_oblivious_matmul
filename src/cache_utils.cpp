@@ -7,6 +7,15 @@
     #define _WIN32_WINNT 0x0600
     #endif
     #include <windows.h>
+#elif __APPLE__
+#include <sys/sysctl.h>
+bool get_sysctl_value(const char* name, size_t &valueOut) {
+    size_t len = sizeof(valueOut);
+    if (sysctlbyname(name, &valueOut, &len, NULL, 0) == 0) {
+        return true;
+    }
+    return false;
+}
 #else
     #include <unistd.h>
     #ifdef _SC_LEVEL1_DCACHE_LINESIZE
@@ -40,6 +49,14 @@ size_t get_cache_line_size() {
         }
     }
     return 64;
+#elif __APPLE__
+    // Attempt to read the macOS “hw.cachelinesize” sysctl
+    size_t lineSize = 0;
+    if (get_sysctl_value("hw.cachelinesize", lineSize)) {
+        return lineSize;
+    }
+    // fallback
+    return 64;
 #else
     #ifdef HAS_SC_LEVEL1_DCACHE_LINESIZE
         long lineSize = sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
@@ -71,6 +88,17 @@ size_t get_l1_cache_size() {
             }
         }
     }
+    return 32 * 1024;
+#elif __APPLE__
+    // Attempt to read the macOS “hw.l1dcachesize” or “machdep.cpu.cache.size” 
+    // but the latter is CPU-dependent. For Apple silicon M1/M2, some sysctl names differ.
+    size_t l1Size = 0;
+    // Some macs might not have “hw.l1dcachesize” – you can try “hw.l1icachesize”, “hw.l2cachesize”, etc.
+    // Or you may not get a value at all, depending on the architecture.
+    if (get_sysctl_value("hw.l1dcachesize", l1Size)) {
+        return l1Size;
+    }
+    // fallback
     return 32 * 1024;
 #else
     #ifdef HAS_SC_LEVEL1_DCACHE_SIZE
