@@ -61,24 +61,18 @@ jobs:
       run: ctest --build-config ${{ matrix.build_type }}
 
     - name: Run executable and check output format
-      # We run in the build directory where the executable is.
+      shell: bash
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      # On Windows with the default Visual Studio generator, the output exe goes into
-      # the subdirectory named after the build type (e.g. "Release"). On Linux, it's in the current dir.
-      # We'll capture stdout to a file "app_output.txt" and then grep for expected lines.
-      # If any grep fails, the step fails.
       run: |
         executable_name="cache_matmul"
-
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            executable_name="cache_matmul.exe"
-            executable_path="Release/$executable_name"  # Windows binary is in Release/
-          else
-            executable_path="./$executable_name"  # Linux/macOS binary
-          fi
-
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          executable_name="Release/${executable_name}.exe"
+        fi
+    
+        echo "Running $executable_name"
+        ./$executable_name > app_output.txt
+    
         echo "Checking output format..."
-
         grep -F "Detected Cache Line Size:" app_output.txt
         grep -F "Detected L1 Cache Size:" app_output.txt
         grep -F "Naive matmul time:" app_output.txt
@@ -86,5 +80,6 @@ jobs:
         grep -F "Cache-oblivious matmul time:" app_output.txt
         grep -F "1D matmul (std::thread, 8 threads) took" app_output.txt
         grep -F "Results CSV written to results.csv" app_output.txt
-
+    
         echo "Output format checks passed!"
+
