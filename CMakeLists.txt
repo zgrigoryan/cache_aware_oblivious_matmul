@@ -9,4 +9,5 @@ add_executable(matmul
     src/naive_matmul.cpp
     src/cache_aware_matmul.cpp
     src/cache_oblivious_matmul.cpp
+    src/cache_aware_matmul_1D.cpp 
 )

@@ -5,6 +5,7 @@ This project implements and benchmarks three matrix multiplication techniques:
 - 🧠 **Naive Matrix Multiplication**
 - 📦 **Cache-Aware Matrix Multiplication**
 - 🌀 **Cache-Oblivious Matrix Multiplication**
+- 🧵 **Cache-Aware-1D Matrix Multiplication** 
 
 The goal is to understand how cache utilization and memory access patterns affect performance in large-scale matrix computations.
 
@@ -16,7 +17,7 @@ The goal is to understand how cache utilization and memory access patterns affec
 
 ```bash
 make
-./cache_matmul --size 512 --iterations 10       
+./cache_matmul --size 1024 --iterations 10       
 ```
 
 This benchmarks all three implementations for matrix sizes 500 to 524 and writes the results to `results.csv`.
@@ -48,8 +49,9 @@ This script reads `results.csv` and generates a performance plot as `timing_plot
 ### Key Observations:
 
 - ✅ **Cache-Aware** implementation consistently performs best.
-- ✅ **Naive** implementation is slightly worse but still competitive.
-- ✅ **Cache-Oblivious** usually performs better when the size is 512.
+- ✅ **Naive** implementation is slightly worse but difference with Cache-aware is insignificant.
+- ✅ **Cache-Oblivious** performance significantly drops when the size is 1023 and above.
+- ✅ **Cache-Aware-1D** performs almost consistently, on average ~150 ns.
 
 ---
 
@@ -69,6 +71,10 @@ This script reads `results.csv` and generates a performance plot as `timing_plot
 
 ### 🌀 Cache-Oblivious Multiplication
 - Uses **recursive divide-and-conquer** approach to implicitly fit data into any cache.
+
+### 🧵 Cache-Aware-1D 
+- Uses blocking to process submatrices fitting into the L1 cache
+- Uses std:thread for parallel blocked matmul  
 ---
 
 ## 🧪 Conclusion
