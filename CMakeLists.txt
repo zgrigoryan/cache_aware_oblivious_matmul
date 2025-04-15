@@ -3,7 +3,7 @@ project(cache_aware_oblivious_matmul)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(matmul
+add_executable(cache_matmul
     src/main.cpp
     src/cache_utils.cpp
     src/naive_matmul.cpp
